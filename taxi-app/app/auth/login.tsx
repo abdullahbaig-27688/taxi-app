@@ -1,7 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+    KeyboardAvoidingView,
+    Platform,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -10,6 +19,7 @@ export default function LoginScreen() {
     const [secureText, setSecureText] = useState(true);
 
     return (
+
         <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.innerContainer}>
 
@@ -57,7 +67,9 @@ export default function LoginScreen() {
 
                 {/* Action Controls */}
                 <View style={styles.actionBlock}>
-                    <TouchableOpacity style={styles.primaryButton} activeOpacity={0.8} onPress={() => router.replace('/(tabs)')}>
+                    <TouchableOpacity style={styles.primaryButton} activeOpacity={0.8}
+                        onPress={() => router.replace('/(tabs)')}
+                    >
                         <Text style={styles.primaryButtonText}>Sign In</Text>
                     </TouchableOpacity>
 
