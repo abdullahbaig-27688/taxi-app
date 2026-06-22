@@ -1,24 +1,51 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { Stack, useRouter, useSegments } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import React, { useEffect, useState } from 'react';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+// Keep the splash screen visible
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const [isAppReady, setIsAppReady] = useState(false);
+  const [userIsLoggedIn, setUserIsLoggedIn] = useState(false);
+  
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        // Simulate loading assets/auth check
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setIsAppReady(true);
+        // Hide the splash screen once we are ready to show the UI
+        await SplashScreen.hideAsync();
+      }
+    }
+    prepare();
+  }, []);
+
+  useEffect(() => {
+    if (!isAppReady) return;
+
+    const inAuthGroup = segments[0] === '(auth)';
+
+    if (!userIsLoggedIn && !inAuthGroup) {
+      // Redirect to login if not logged in
+      router.replace('/auth/login');
+    } else if (userIsLoggedIn && inAuthGroup) {
+      // Redirect to main app if already logged in
+      router.replace('/(tabs)');
+    }
+  }, [isAppReady, userIsLoggedIn, segments]);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="(tabs)" />
+    </Stack>
   );
 }
