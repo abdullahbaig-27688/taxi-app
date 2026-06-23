@@ -1,9 +1,9 @@
-import app from "./app";
-import { testConnection } from "./config/database";
-import { env } from "./config/env";
-await testConnection();
-Bun.serve({
-  port: parseInt(env.PORT, 10),
-  fetch: app.fetch
+import { Hono } from 'hono'
+
+const app = new Hono()
+
+app.get('/', (c) => {
+  return c.text('Hello Hono!')
 })
-console.log(`🚀 Server is running on port ${env.PORT}`);
+
+export default app
