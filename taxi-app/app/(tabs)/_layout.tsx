@@ -60,6 +60,17 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="chooseLocation"
+        options={{
+          href: null,
+          title: 'Choose Location',
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="bookmark.fill" color={color} />
+          ),
+        }}
+      />
+
 
       <Tabs.Screen
         name="book"

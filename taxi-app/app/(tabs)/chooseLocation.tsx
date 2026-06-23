@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
     Platform,
@@ -11,16 +11,37 @@ import {
 } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 export default function SaveLocationScreen() {
     const router = useRouter();
+    const params = useLocalSearchParams<any>();
     const [searchQuery, setSearchQuery] = useState('');
 
-    // Initial map region (Mocked coordinates, you can replace with actual user location)
+    const [selectedLocation, setSelectedLocation] = useState({
+        latitude: params.lat ? parseFloat(params.lat) : 31.5204,
+        longitude: params.lng ? parseFloat(params.lng) : 74.3587,
+        address: params.fullAddress || 'Barham road , XYZ 12/3',
+        title: params.title || 'Chwar chra'
+    });
+
     const initialRegion = {
-        latitude: 31.5204, // Defaulting to Lahore coordinates for placeholder
-        longitude: 74.3587,
+        latitude: selectedLocation.latitude,
+        longitude: selectedLocation.longitude,
         latitudeDelta: 0.05,
         longitudeDelta: 0.05,
+    };
+
+    const handleSave = () => {
+        router.push({
+            pathname: '/editAdress',
+            params: {
+                ...params,
+                lat: selectedLocation.latitude.toString(),
+                lng: selectedLocation.longitude.toString(),
+                fullAddress: selectedLocation.address,
+                title: selectedLocation.title,
+            }
+        });
     };
 
     return (
@@ -31,8 +52,15 @@ export default function SaveLocationScreen() {
                 style={styles.map}
                 initialRegion={initialRegion}
                 showsUserLocation={false}
+                onPress={(e) => {
+                    setSelectedLocation(prev => ({
+                        ...prev,
+                        latitude: e.nativeEvent.coordinate.latitude,
+                        longitude: e.nativeEvent.coordinate.longitude,
+                    }));
+                }}
             >
-                <Marker coordinate={{ latitude: 31.5204, longitude: 74.3587 }}>
+                <Marker coordinate={{ latitude: selectedLocation.latitude, longitude: selectedLocation.longitude }}>
                     <View style={styles.customMarker}>
                         <Ionicons name="location" size={32} color="#A855F7" />
                     </View>
@@ -88,7 +116,7 @@ export default function SaveLocationScreen() {
                 </View>
 
                 {/* Save Location Button */}
-                <TouchableOpacity style={styles.saveButton} activeOpacity={0.8} onPress={() => router.back()}>
+                <TouchableOpacity style={styles.saveButton} activeOpacity={0.8} onPress={handleSave}>
                     <Text style={styles.saveButtonText}>Save Location</Text>
                 </TouchableOpacity>
 

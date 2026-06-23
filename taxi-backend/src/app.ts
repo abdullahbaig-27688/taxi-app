@@ -3,6 +3,7 @@ import { errorHandler } from './middlewares/error.middleware';
 import { authModule } from './modules/auth/auth.module';
 import { rideModule } from "./modules/ride/ride.module";
 import { userModule } from './modules/user/user.module';
+import { addressModule } from "./modules/address/address.module";
 const app = new Hono()
 
 app.get('/', (c) => {
@@ -14,5 +15,6 @@ app.get("/health", (c) => {
 app.route("/api", authModule);
 app.route("/api", userModule)
 app.route("/api", rideModule);
+app.route("/api", addressModule)
 app.onError(errorHandler)
 export default app

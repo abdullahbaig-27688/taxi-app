@@ -1,23 +1,62 @@
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { router } from "expo-router";
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useSavedAddresses } from '../../hooks/useSavedAddress';
+
 const EditSavedAdress = () => {
-  const [selectedType, setSelectedType] = useState('House');
-  const [placeName, setPlaceName] = useState('Company Office');
-  const [houseNumber, setHouseNumber] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [description, setDescription] = useState('Barham road , XYZ 12/3');
+  const router = useRouter();
+  const params = useLocalSearchParams<{ id?: string; title?: string; fullAddress?: string; label?: string; houseNumber?: string; phoneNumber?: string; lat?: string; lng?: string }>();
+  const { saveAddress, updateAddress } = useSavedAddresses();
+
+  const [selectedType, setSelectedType] = useState(params.label || 'House');
+  const [placeName, setPlaceName] = useState(params.title || '');
+  const [houseNumber, setHouseNumber] = useState(params.houseNumber || '');
+  const [phoneNumber, setPhoneNumber] = useState(params.phoneNumber || '');
+  const [description, setDescription] = useState(params.fullAddress || '');
+  const [loading, setLoading] = useState(false);
+
+  // Sync state when returning from Choose Location with new params
+  React.useEffect(() => {
+    if (params.title) setPlaceName(params.title);
+    if (params.fullAddress) setDescription(params.fullAddress);
+    if (params.label) setSelectedType(params.label);
+  }, [params.title, params.fullAddress, params.label]);
+
+  const handleSave = async () => {
+    if (!placeName.trim() || !description.trim()) {
+      Alert.alert('Error', 'Please fill in the place name and description.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const addressData = {
+        label: selectedType,
+        title: placeName,
+        fullAddress: description,
+        houseNumber,
+        phoneNumber,
+        lat: params.lat ? parseFloat(params.lat) : null,
+        lng: params.lng ? parseFloat(params.lng) : null,
+      };
+
+      if (params.id) {
+        await updateAddress(params.id, addressData);
+      } else {
+        await saveAddress(addressData);
+      }
+
+      Alert.alert('Success', 'Address saved successfully!', [
+        { text: 'OK', onPress: () => router.back() }
+      ]);
+    } catch (err) {
+      Alert.alert('Error', err instanceof Error ? err.message : 'Failed to save address.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const placeTypes = ['House', 'Apartment', 'work', 'Dormitory'];
 
@@ -31,10 +70,10 @@ const EditSavedAdress = () => {
 
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity style={styles.backButton}>
+            <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
               <Ionicons name="arrow-back" size={24} color="#000" />
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>Edit Saved Place</Text>
+            <Text style={styles.headerTitle}>{params.id ? 'Edit Saved Place' : 'Add Saved Place'}</Text>
           </View>
 
           {/* Place Type Selector */}
@@ -115,8 +154,12 @@ const EditSavedAdress = () => {
             <MaterialIcons name="my-location" size={18} color="#000" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.saveBtn}>
-            <Text style={styles.saveBtnText}>Save Location</Text>
+          <TouchableOpacity
+            style={[styles.saveBtn, loading && styles.saveBtnDisabled]}
+            onPress={handleSave}
+            disabled={loading}
+          >
+            <Text style={styles.saveBtnText}>{loading ? 'Saving...' : 'Save Location'}</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -238,6 +281,9 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 25,
     backgroundColor: '#A855F7', // Solid purple (Use react-native-linear-gradient for exact match)
+  },
+  saveBtnDisabled: {
+    backgroundColor: '#D1D5DB',
   },
   saveBtnText: {
     fontSize: 16,

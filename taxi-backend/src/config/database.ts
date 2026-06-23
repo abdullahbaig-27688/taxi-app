@@ -2,7 +2,8 @@
 
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import * as schemas from "../db/schemas/user.schema";
+import * as addressSchemas from "../db/schemas/address.schema";
+import * as userSchemas from "../db/schemas/user.schema";
 import { env } from "./env";
 export const sql = postgres(env.DATABASE_URL, {
 
@@ -11,7 +12,8 @@ const client = postgres(env.DATABASE_URL, {
 });
 export const db = drizzle(client, {
     schema: {
-        users: schemas.users,
+        ...userSchemas,
+        ...addressSchemas,
     }
 });
 
