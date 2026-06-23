@@ -1,5 +1,5 @@
 import { useRide } from '@/hooks/userRide';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -10,18 +10,16 @@ import SearchCard from '../../components/home/SearchCard';
 import TopDrivers from '../../components/home/TopDrivers';
 import VehicleCategories from '../../components/home/VehicleCategories';
 
+import { useCurrentLocation } from '../../hooks/useCurrentLocation';
 import { useUserProfile } from '../../hooks/userProfile';
 
 
 export default function HomeScreen() {
 
-
   const {
     user,
     loading: userLoading
   } = useUserProfile();
-
-
 
   const {
     estimateRide,
@@ -30,30 +28,45 @@ export default function HomeScreen() {
     error: rideError
   } = useRide();
 
-
+  const {
+    location: currentLocation,
+    loading: locationLoading,
+    error: locationError,
+  } = useCurrentLocation();
 
   const [pickup, setPickup] = useState("");
   const [dropoff, setDropoff] = useState("");
-
-
+  const [pickupEditedByUser, setPickupEditedByUser] = useState(false);
 
   const loading = userLoading || rideLoading;
 
+  // Auto-fill pickup once GPS resolves, unless the user already typed something
+  useEffect(() => {
+    if (currentLocation && !pickupEditedByUser) {
+      setPickup(currentLocation.address);
+    }
+  }, [currentLocation, pickupEditedByUser]);
 
+  // Wraps SearchCard's setPickup so we can tell "auto-filled" apart from "user typed"
+  const handlePickupChange = (value: string) => {
+    setPickupEditedByUser(true);
+    setPickup(value);
+  };
 
   const handleEstimateRide = async () => {
 
+    if (!currentLocation) {
+      console.log("No current location yet, can't estimate ride");
+      return;
+    }
 
     console.log("Pickup:", pickup);
     console.log("Dropoff:", dropoff);
 
-
-
     const result = await estimateRide({
 
-      // temporary coordinates
-      pickupLat: 33.6844,
-      pickupLng: 73.0479,
+      pickupLat: currentLocation.lat,
+      pickupLng: currentLocation.lng,
 
       dropoffLat: 33.738,
       dropoffLng: 73.0845,
@@ -61,22 +74,22 @@ export default function HomeScreen() {
       vehicleCategory: "economy"
 
     });
-
 
     console.log("Estimate:", result);
 
   };
 
-
-
-
   const handleRequestRide = async () => {
 
+    if (!currentLocation) {
+      console.log("No current location yet, can't request ride");
+      return;
+    }
 
     const result = await requestRide({
 
-      pickupLat: 33.6844,
-      pickupLng: 73.0479,
+      pickupLat: currentLocation.lat,
+      pickupLng: currentLocation.lng,
 
       dropoffLat: 33.738,
       dropoffLng: 73.0845,
@@ -85,13 +98,9 @@ export default function HomeScreen() {
 
     });
 
-
     console.log("Ride Created:", result);
 
   };
-
-
-
 
   if (loading) {
 
@@ -114,33 +123,23 @@ export default function HomeScreen() {
 
   }
 
-
-
-
   return (
 
     <SafeAreaView style={styles.container}>
-
 
       <StatusBar
         barStyle="dark-content"
         backgroundColor="#FDFBFF"
       />
 
-
-
       <Header
         name={user?.fullname ?? 'Guest'}
       />
-
-
 
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-
-
 
         <SearchCard
 
@@ -148,40 +147,30 @@ export default function HomeScreen() {
 
           dropoff={dropoff}
 
-          setPickup={setPickup}
+          setPickup={handlePickupChange}
 
           setDropoff={setDropoff}
 
+          pickupLoading={locationLoading}
+
+          pickupError={locationError}
+
         />
-
-
 
         <VehicleCategories />
 
-
-
         <PromoBanner />
-
-
 
         <TopDrivers />
 
-
-
         <NearbyDrivers />
 
-
-
       </ScrollView>
-
-
 
     </SafeAreaView>
 
   );
 }
-
-
 
 const styles = StyleSheet.create({
 
@@ -190,13 +179,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FDFBFF',
   },
 
-
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-
 
   scrollContent: {
     paddingBottom: 24,
