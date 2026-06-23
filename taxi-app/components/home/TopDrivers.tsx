@@ -1,25 +1,44 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
+
+const TOP_DRIVERS = [
+  { id: '1', image: require('../../assets/images/ryder1.png') }, 
+  { id: '2', image: require('../../assets/images/ryder2.png') },
+  { id: '3', image: require('../../assets/images/ryder3.png') },
+  { id: '4', image: require('../../assets/images/ryder4.png') },
+  { id: '5', image: require('../../assets/images/ryder5.png') },
+  { id: '6', image: require('../../assets/images/ryder6.png') },
+];
 
 export default function TopDrivers() {
+  
+  // 2. FlatList ke liye renderItem function
+  const renderDriver = ({ item }: { item: any }) => (
+    <View style={styles.avatarWrapper}>
+      <View style={styles.avatarPlaceholder}>
+        {/* Driver ki image */}
+        <Image 
+          source={item.image} 
+          style={styles.driverImage} 
+        />
+       
+      </View>
+    </View>
+  );
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Top rated</Text>
-      <ScrollView 
+      
+      {/* 3. ScrollView ki jagah FlatList */}
+      <FlatList 
         horizontal 
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.container}
-      >
-        {[1, 2, 3, 4, 5, 6].map((item) => (
-          <View key={item} style={styles.avatarWrapper}>
-            <View style={styles.avatarPlaceholder}>
-              <View style={styles.badge}>
-                <Text style={{ fontSize: 8 }}>👑</Text>
-              </View>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
+        data={TOP_DRIVERS}
+        keyExtractor={(item) => item.id}
+        renderItem={renderDriver}
+      />
     </View>
   );
 }
@@ -37,7 +56,7 @@ const styles = StyleSheet.create({
   },
   container: {
     paddingHorizontal: 16,
-    gap: 14,
+    gap: 14, // Newer React Native versions support gap here
   },
   avatarWrapper: {
     position: 'relative',
@@ -49,6 +68,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#EAE9FF',
     borderWidth: 2,
     borderColor: '#6C5CE7',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  // Naya style image ko round aur theek se fit karne ke liye
+  driverImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 27, // Placeholder ke mutabiq
   },
   badge: {
     position: 'absolute',
@@ -61,5 +88,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 2,
+    // iOS shadow for the badge
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
   },
 });
