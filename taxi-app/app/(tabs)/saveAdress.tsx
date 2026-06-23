@@ -34,31 +34,51 @@ const MOCK_ADDRESSES: SavedAddress[] = [
     },
 ];
 
-// --- Sub-Components ---
+const AddressCard = ({ item }: { item: SavedAddress }) => {
+    const router = useRouter();
 
-// 1. Individual Address Card
-const AddressCard = ({ item }: { item: SavedAddress }) => (
-    <View style={styles.cardContainer}>
-        {/* Card Top Label */}
-        <Text style={styles.cardTopLabel}>{item.label}</Text>
+    return (
+        <View style={styles.cardContainer}>
+            {/* Card Top Label */}
+            <Text style={styles.cardTopLabel}>{item.label}</Text>
 
-        {/* Card Main Content */}
-        <View style={styles.cardRow}>
-            <View style={styles.iconWrapper}>
-                <Ionicons name="location-outline" size={20} color="#1C1C1E" />
+            {/* Card Main Content */}
+            <View style={styles.cardRow}>
+                <View style={styles.iconWrapper}>
+                    <Ionicons name="location-outline" size={20} color="#1C1C1E" />
+                </View>
+
+                <View style={styles.textContainer}>
+                    <Text style={styles.addressTitle}>{item.title}</Text>
+                    <Text style={styles.addressSubtitle}>{item.fullAddress}</Text>
+                </View>
+
+                {/* Menu + Edit Column */}
+                <View style={styles.actionsColumn}>
+                    <TouchableOpacity style={styles.editButton}
+                        onPress={() => {
+                            router.push({
+                                pathname: '/editAdress',
+                                params: {
+                                    id: item.id,
+                                    title: item.title,
+                                    fullAddress: item.fullAddress,
+                                },
+                            });
+                        }}
+                    >
+                        <Ionicons name="create-outline" size={18} color="#A855F7" />
+                        <Text style={styles.editText}>Edit</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.menuButton} activeOpacity={0.6}>
+                        <Ionicons name="ellipsis-horizontal" size={20} color="#1C1C1E" />
+                    </TouchableOpacity>
+                </View>
             </View>
-
-            <View style={styles.textContainer}>
-                <Text style={styles.addressTitle}>{item.title}</Text>
-                <Text style={styles.addressSubtitle}>{item.fullAddress}</Text>
-            </View>
-
-            <TouchableOpacity style={styles.menuButton} activeOpacity={0.6}>
-                <Ionicons name="ellipsis-horizontal" size={20} color="#1C1C1E" />
-            </TouchableOpacity>
         </View>
-    </View>
-);
+    );
+};
 
 // --- Main Screen Component ---
 export default function SavedPlacesScreen() {
@@ -207,5 +227,26 @@ const styles = StyleSheet.create({
     },
     menuButton: {
         padding: 4, // Makes it easier to tap without expanding the icon bounds visually
+    },
+    actionsColumn: {
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+        gap: 8,
+    },
+
+    editButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 8,
+        backgroundColor: '#F7F2FF',
+    },
+
+    editText: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#A855F7',
     },
 });

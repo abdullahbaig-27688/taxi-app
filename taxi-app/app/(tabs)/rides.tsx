@@ -191,14 +191,13 @@ const styles = StyleSheet.create({
         borderRadius: 19,
     },
 
-    // Bottom Sheet
     bottomSheet: {
         position: 'absolute',
-        bottom: 0, // This sits right above your bottom tabs if configured in Expo Router
+        bottom: -10,   // 👈 pushes it slightly down
         left: 0,
         right: 0,
-        height: '65%', // Takes up the bottom 65% of the screen
-        backgroundColor: '#FAFAFA', // Slightly off-white matching the design
+        height: '62%', // 👈 slightly smaller height
+        backgroundColor: '#FAFAFA',
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         shadowColor: '#000',

@@ -178,9 +178,9 @@ export default function LoginScreen() {
                         </View>
                     )}
 
-                    <TouchableOpacity style={styles.forgotBtn} disabled={loading} hitSlop={8}>
+                    {/* <TouchableOpacity style={styles.forgotBtn} disabled={loading} hitSlop={8}>
                         <Text style={styles.forgotText}>Forgot Password?</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
                 <View style={{
                     flexDirection: 'row',
@@ -188,48 +188,9 @@ export default function LoginScreen() {
                     gap: 10,
 
                 }}>
-                    <TouchableOpacity
-                        style={{}}
-                        onPress={() => router.push('/tracking')}
-                    >
-                        <Text style={{ textDecorationLine: 'underline', color: '#6236FF' }}>Traking</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => router.push('/active-ride')}
-                    >
-                        <Text style={{ textDecorationLine: 'underline', color: '#6236FF' }}>active-ride</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => router.push('/on-map')}
-                    >
-                        <Text style={{ textDecorationLine: 'underline', color: '#6236FF' }}>on-map</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => router.push('/rate-ride')}
-                    >
-                        <Text style={{ textDecorationLine: 'underline', color: '#6236FF' }}>Rate Ride</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => router.push('/reviews')}
-                    >
-                        <Text style={{ textDecorationLine: 'underline', color: '#6236FF' }}>Reviws</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => router.push('/rides')}
-                    >
-                        <Text style={{ textDecorationLine: 'underline', color: '#6236FF' }}>Rides</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => router.push('/save-location')}
-                    >
-                        <Text style={{ textDecorationLine: 'underline', color: '#6236FF' }}>Save Locations</Text>
-                    </TouchableOpacity>
 
-                    <TouchableOpacity
-                        onPress={() => router.push('/saved-places')}
-                    >
-                        <Text style={{ textDecorationLine: 'underline', color: '#6236FF' }}>saved-places</Text>
-                    </TouchableOpacity>
+
+
                 </View>
                 {/* Action Controls */}
                 <View style={styles.actionBlock}>

@@ -1,26 +1,41 @@
 import { Ionicons } from '@expo/vector-icons';
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from 'react';
 import {
     Image,
     Platform,
-    SafeAreaView,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
 } from 'react-native';
-// Split imports to avoid Metro bundler warnings in Expo
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 // --- Mock Route Data ---
 const ROUTE_COORDINATES = [
-    { latitude: 31.5125, longitude: 74.3530 }, // Driver
+    { latitude: 31.5125, longitude: 74.3530 },
     { latitude: 31.5100, longitude: 74.3500 },
-    { latitude: 31.5050, longitude: 74.3480 }, // Rider
+    { latitude: 31.5050, longitude: 74.3480 },
 ];
 
 export default function DriverMapScreen() {
     const [isOnline, setIsOnline] = useState(true);
+
+    const {
+        id,
+        name,
+        rating,
+        time,
+        plate,
+        avatar,
+    } = useLocalSearchParams();
+
+    // ✅ Safe fallback values
+    const driverName = (name as string) || "Unknown Driver";
+    const driverAvatar = (avatar as string) || "https://i.pravatar.cc/150?img=11";
+    const driverRating = (rating as string) || "4.8";
+    const driverPlate = (plate as string) || "N/A";
+    const driverTime = (time as string) || "2 min away";
 
     const initialRegion = {
         latitude: 31.5085,
@@ -31,48 +46,46 @@ export default function DriverMapScreen() {
 
     return (
         <View style={styles.container}>
-            {/* --- Map Background --- */}
+
+            {/* --- Map --- */}
             <MapView
                 provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
                 style={styles.map}
                 initialRegion={initialRegion}
                 showsUserLocation={false}
             >
-                {/* Route Line */}
                 <Polyline
                     coordinates={ROUTE_COORDINATES}
-                    strokeColor="#A855F7" // Purple
+                    strokeColor="#A855F7"
                     strokeWidth={4}
-                    lineCap="round"
-                    lineJoin="round"
                 />
 
-                {/* Driver Marker */}
-                <Marker coordinate={ROUTE_COORDINATES[0]} anchor={{ x: 0.5, y: 0.5 }}>
+                <Marker coordinate={ROUTE_COORDINATES[0]}>
                     <View style={styles.driverMarker}>
                         <Image
-                            source={{ uri: 'https://i.pravatar.cc/150?img=11' }}
+                            source={{ uri: driverAvatar }}
                             style={styles.markerAvatar}
                         />
                     </View>
                 </Marker>
             </MapView>
 
-            {/* --- Top Floating Header --- */}
-            <SafeAreaView style={styles.topHeaderContainer} pointerEvents="box-none">
+            {/* --- Header --- */}
+            <SafeAreaView style={styles.topHeaderContainer}>
                 <View style={styles.topHeader}>
+
                     {/* Driver Info */}
                     <View style={styles.driverInfo}>
-                        <View>
-                            <Image
-                                source={{ uri: 'https://i.pravatar.cc/150?img=11' }}
-                                style={styles.headerAvatar}
-                            />
-                            <View style={[styles.statusDot, { backgroundColor: isOnline ? '#00C566' : '#8E8E93' }]} />
-                        </View>
+                        <Image
+                            source={{ uri: driverAvatar }}
+                            style={styles.headerAvatar}
+                        />
+                        <View style={[styles.statusDot, { backgroundColor: isOnline ? '#00C566' : '#8E8E93' }]} />
                         <View style={styles.headerTextCol}>
-                            <Text style={styles.headerName}>Ahmad Khan</Text>
-                            <Text style={styles.headerStatus}>{isOnline ? 'Online' : 'Offline'}</Text>
+                            <Text style={styles.headerName}>{driverName}</Text>
+                            <Text style={styles.headerStatus}>
+                                {isOnline ? 'Online' : 'Offline'}
+                            </Text>
                         </View>
                     </View>
 
@@ -82,122 +95,87 @@ export default function DriverMapScreen() {
                         <Text style={styles.earningsAmount}>18,500 IQD</Text>
                     </View>
 
-                    {/* Custom Toggle Switch */}
+                    {/* Toggle */}
                     <TouchableOpacity
                         activeOpacity={0.8}
                         onPress={() => setIsOnline(!isOnline)}
-                        style={[styles.toggleSwitch, { backgroundColor: isOnline ? '#00C566' : '#E5E5EA' }]}
+                        style={[
+                            styles.toggleSwitch,
+                            { backgroundColor: isOnline ? '#00C566' : '#E5E5EA' }
+                        ]}
                     >
-                        <View style={[styles.toggleThumb, isOnline ? styles.toggleThumbRight : styles.toggleThumbLeft]}>
-                            <Ionicons name="power" size={14} color={isOnline ? '#00C566' : '#8E8E93'} />
+                        <View style={[
+                            styles.toggleThumb,
+                            isOnline ? styles.toggleThumbRight : styles.toggleThumbLeft
+                        ]}>
+                            <Ionicons name="power" size={14} color="#333" />
                         </View>
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
 
-            {/* --- Ride Request Card --- */}
+            {/* --- Request Card --- */}
             <View style={styles.requestCardContainer}>
                 <View style={styles.requestCard}>
 
-                    {/* Top Progress Bar */}
-                    <View style={styles.progressBarTrack}>
-                        <View style={[styles.progressBarFill, { width: '75%' }]} />
-                    </View>
-
-                    {/* Rider Info Row */}
+                    {/* Rider */}
                     <View style={styles.riderRow}>
-                        <Image source={{ uri: 'https://i.pravatar.cc/150?img=12' }} style={styles.riderAvatar} />
+                        <Image
+                            source={{ uri: 'https://i.pravatar.cc/150?img=12' }}
+                            style={styles.riderAvatar}
+                        />
                         <View style={styles.riderTextCol}>
-                            <Text style={styles.riderName}>Muhammad Ilyas</Text>
-                            <View style={styles.locationSubRow}>
-                                <Ionicons name="location-outline" size={12} color="#8E8E93" />
-                                <Text style={styles.riderLocation}>Barham Road</Text>
-                            </View>
-                        </View>
-                        {/* Countdown Timer */}
-                        <View style={styles.timerCircle}>
-                            <Text style={styles.timerText}>8s</Text>
+                            <Text style={styles.riderName}>{name || "Rider"}</Text>
+                            <Text style={styles.riderLocation}>{driverTime}</Text>
                         </View>
                     </View>
 
-                    {/* Trip Stats */}
-                    <View style={styles.tripStatsRow}>
-                        <View style={styles.statItem}>
-                            <Ionicons name="swap-vertical" size={14} color="#8E8E93" />
-                            <Text style={styles.statText}>0.8 km total</Text>
-                        </View>
-                        <View style={styles.statItem}>
-                            <Ionicons name="time-outline" size={14} color="#8E8E93" />
-                            <Text style={styles.statText}>2 min</Text>
-                        </View>
-                    </View>
-
-                    {/* Rider Details Box */}
+                    {/* Details */}
                     <View style={styles.detailsBox}>
-                        <Text style={styles.detailsBoxTitle}>RIDER DETIALS</Text>
+                        <Text style={styles.detailsBoxTitle}>RIDER DETAILS</Text>
+
                         <View style={styles.detailsRow}>
-                            <Text style={styles.detailsLabel}>Vehical</Text>
+                            <Text style={styles.detailsLabel}>Vehicle</Text>
                             <Text style={styles.detailsValue}>Toyota Corolla</Text>
                         </View>
+
                         <View style={styles.detailsRow}>
                             <Text style={styles.detailsLabel}>Rating</Text>
-                            <View style={styles.ratingBadge}>
-                                <Text style={styles.detailsValue}>4.8</Text>
-                                <Ionicons name="star" size={12} color="#FFC107" style={styles.starIcon} />
-                            </View>
+                            <Text style={styles.detailsValue}>{driverRating}</Text>
+                        </View>
+
+                        <View style={styles.detailsRow}>
+                            <Text style={styles.detailsLabel}>Plate</Text>
+                            <Text style={styles.detailsValue}>{driverPlate}</Text>
                         </View>
                     </View>
 
-                    {/* Action Buttons */}
-                    <TouchableOpacity style={styles.bookButton} activeOpacity={0.8}>
-                        <Ionicons name="checkmark-circle" size={18} color="#FFFFFF" style={styles.btnIcon} />
+
+                    <TouchableOpacity
+                        style={styles.bookButton}
+                        onPress={() =>
+                            router.push({
+                                pathname: "/tracking",
+                                params: {
+                                    driver: JSON.stringify({
+                                        id,
+                                        name: driverName,
+                                        rating: driverRating,
+                                        time: driverTime,
+                                        plate: driverPlate,
+                                        avatar: driverAvatar,
+                                    }),
+                                },
+                            })
+                        }
+                    >
                         <Text style={styles.bookButtonText}>Book Ride</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.textLinkButton}>
-                        <Text style={styles.textLink}>Check Another</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.outlineButton} activeOpacity={0.8}>
-                        <Text style={styles.outlineButtonText}>Book for Others</Text>
-                    </TouchableOpacity>
                 </View>
             </View>
 
-            {/* --- Bottom Navigation Mock --- */}
-            <View style={styles.bottomNavContainer}>
-                {/* Previous Rides Pull-up Handle */}
-                <View style={styles.previousRidesHandle}>
-                    <View style={styles.handleLeft}>
-                        <Ionicons name="cube-outline" size={18} color="#1C1C1E" style={styles.handleIcon} />
-                        <Text style={styles.handleTitle}>Previous Rides</Text>
-                    </View>
-                    <View style={styles.handleBadge}>
-                        <Ionicons name="chevron-up" size={14} color="#1C1C1E" />
-                        <Text style={styles.handleBadgeText}>4</Text>
-                    </View>
-                </View>
-
-                {/* Tabs */}
-                <View style={styles.tabBar}>
-                    <TouchableOpacity style={styles.tabItem}>
-                        <Ionicons name="car-outline" size={24} color="#8E8E93" />
-                        <Text style={styles.tabText}>Rides</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.tabItem}>
-                        <Ionicons name="location-outline" size={24} color="#A855F7" />
-                        <Text style={[styles.tabText, styles.activeTabText]}>On Map</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.tabItem}>
-                        <View>
-                            <Ionicons name="notifications-outline" size={24} color="#8E8E93" />
-                            <View style={styles.notificationDot} />
-                        </View>
-                        <Text style={styles.tabText}>Inbox</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        </View>
+        </View >
     );
 }
 

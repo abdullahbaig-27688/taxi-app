@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
+import { router } from "expo-router";
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
-
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 const IRAQ_DRIVERS = [
     { id: '1', name: 'Ahmed Khan', rating: '4.9', time: '2 min away', plate: 'بغداد - ٥٨٣٩٢', avatar: 'https://i.imgur.com/W7S0v0p.png', image: require('../../assets/images/nearme1.png') },
     { id: '2', name: 'Mustafa Ali', rating: '5.0', time: '3 min away', plate: 'أربيل - ٢٠٤٨١', avatar: 'https://i.imgur.com/twHofw2.png', image: require('../../assets/images/nearme2.png') },
@@ -10,6 +10,7 @@ const IRAQ_DRIVERS = [
 ];
 
 export default function NearbyDrivers() {
+
     return (
         <View style={styles.section}>
             <Text style={styles.sectionTitle}>Nearby</Text>
@@ -17,18 +18,31 @@ export default function NearbyDrivers() {
             <View style={styles.gridContainer}>
                 {IRAQ_DRIVERS.map((driver) => {
                     return (
-                        <View key={driver.id} style={styles.card}>
+                        <Pressable key={driver.id} style={styles.card} onPress={() => {
+                            router.push({
+                                pathname: '/book',
+                                params: {
+                                    id: driver.id,
+                                    name: driver.name,
+                                    rating: driver.rating,
+                                    time: driver.time,
+                                    plate: driver.plate,
+                                    avatar: driver.avatar,
+                                }
+                            });
 
-                            {/* 1. LEFT TOP CORNER: Driver Circular Avatar & Name */}
+                        }}>
+
+
                             <View style={styles.leftTopContainer}>
                                 <Image source={{ uri: driver.avatar }} style={styles.avatarImg} resizeMode="contain" />
                                 <Text style={styles.driverName} numberOfLines={1}>{driver.name}</Text>
                             </View>
 
-                            {/* Main Content Layout Wrapper */}
+
                             <View style={styles.mainContentWrapper}>
 
-                                {/* 2. MIDDLE AREA: Car Image and Plate Number */}
+
                                 <View style={styles.middleContainer}>
                                     <Image
                                         source={driver.image}
@@ -40,24 +54,24 @@ export default function NearbyDrivers() {
                                     </View>
                                 </View>
 
-                                {/* 3. FOOTER ROW (BOTTOM LEFT: Rating Badge | BOTTOM RIGHT: Time Away) */}
+
                                 <View style={styles.footerRow}>
-                                    {/* Rating badge sitting perfectly in the bottom-left corner */}
+
                                     <View style={styles.ratingBadge}>
                                         <Ionicons name="star" size={11} color="#F9C22E" />
                                         <Text style={styles.ratingText}>{driver.rating}</Text>
                                     </View>
 
-                                    {/* Right Bottom Time Text */}
+
                                     <Text style={styles.timeText}>⏱️ {driver.time}</Text>
                                 </View>
                             </View>
 
-                        </View>
+                        </Pressable>
                     );
                 })}
             </View>
-        </View>
+        </View >
     );
 }
 

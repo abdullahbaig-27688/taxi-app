@@ -1,24 +1,35 @@
 import { Ionicons } from '@expo/vector-icons';
+import { router, useLocalSearchParams } from "expo-router";
 import React from 'react';
 import {
+    Alert,
     Image,
     Platform,
     StyleSheet,
     Text,
     TouchableOpacity,
-    View,
+    View
 } from 'react-native';
-// Split imports to avoid Metro bundler warnings in Expo
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 
-// --- Mock Route Data ---
-const ROUTE_COORDINATES = [
-    { latitude: 31.5160, longitude: 74.3540 }, // Driver Current Location
-    { latitude: 31.5120, longitude: 74.3510 },
-    { latitude: 31.5080, longitude: 74.3480 }, // Pickup Location
-];
-
 export default function TrackingScreen() {
+
+    const { driver } = useLocalSearchParams();
+
+    const driverData = driver ? JSON.parse(driver as string) : null;
+
+    const driverName = driverData?.name ?? "Unknown Driver";
+    const driverAvatar = driverData?.avatar ?? "https://i.pravatar.cc/150?img=11";
+    const driverRating = driverData?.rating ?? "4.8";
+    const driverPlate = driverData?.plate ?? "N/A";
+    const driverTime = driverData?.time ?? "2 min away";
+
+    const ROUTE_COORDINATES = [
+        { latitude: 31.5160, longitude: 74.3540 },
+        { latitude: 31.5120, longitude: 74.3510 },
+        { latitude: 31.5080, longitude: 74.3480 },
+    ];
+
     const initialRegion = {
         latitude: 31.5120,
         longitude: 74.3510,
@@ -28,28 +39,25 @@ export default function TrackingScreen() {
 
     return (
         <View style={styles.container}>
-            {/* --- Map Background --- */}
+
+            {/* Map */}
             <MapView
                 provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
                 style={styles.map}
                 initialRegion={initialRegion}
                 showsUserLocation={false}
             >
-                {/* Route Line */}
                 <Polyline
                     coordinates={ROUTE_COORDINATES}
-                    strokeColor="#A855F7" // Primary Purple
+                    strokeColor="#A855F7"
                     strokeWidth={4}
-                    lineCap="round"
-                    lineJoin="round"
                 />
 
-                {/* Driver Marker */}
-                <Marker coordinate={ROUTE_COORDINATES[0]} anchor={{ x: 0.5, y: 0.5 }}>
+                <Marker coordinate={ROUTE_COORDINATES[0]}>
                     <View style={styles.driverMarkerContainer}>
                         <View style={styles.driverMarkerGlow}>
                             <Image
-                                source={{ uri: 'https://i.pravatar.cc/150?img=11' }} // Driver Avatar
+                                source={{ uri: driverAvatar }}
                                 style={styles.markerAvatar}
                             />
                         </View>
@@ -58,136 +66,115 @@ export default function TrackingScreen() {
                 </Marker>
             </MapView>
 
-            {/* --- Right Side Map Controls --- */}
+            {/* Right Controls */}
             <View style={styles.mapControlsRight}>
-                <TouchableOpacity style={styles.controlButton} activeOpacity={0.8}>
+                <TouchableOpacity style={styles.controlButton}>
                     <Ionicons name="locate" size={20} color="#A855F7" />
                 </TouchableOpacity>
 
                 <View style={styles.zoomControls}>
-                    <TouchableOpacity style={styles.zoomButton} activeOpacity={0.8}>
+                    <TouchableOpacity style={styles.zoomButton}>
                         <Ionicons name="add" size={20} color="#1C1C1E" />
                     </TouchableOpacity>
                     <View style={styles.zoomDivider} />
-                    <TouchableOpacity style={styles.zoomButton} activeOpacity={0.8}>
+                    <TouchableOpacity style={styles.zoomButton}>
                         <Ionicons name="remove" size={20} color="#1C1C1E" />
                     </TouchableOpacity>
                 </View>
             </View>
 
-            {/* --- Main Info Card --- */}
+            {/* Card */}
             <View style={styles.mainCardContainer}>
                 <View style={styles.mainCard}>
 
-                    {/* Header: Title & Call Button */}
                     <View style={styles.cardHeader}>
                         <View>
                             <Text style={styles.cardTitle}>Your Driver is on the way</Text>
                             <Text style={styles.etaText}>
-                                Arriving in <Text style={styles.etaTime}>5 min</Text>
+                                Arriving in <Text style={styles.etaTime}>{driverTime}</Text>
                             </Text>
                         </View>
-                        <TouchableOpacity style={styles.callButton} activeOpacity={0.7}>
+
+                        <TouchableOpacity style={styles.callButton}>
                             <Ionicons name="call" size={18} color="#A855F7" />
                         </TouchableOpacity>
                     </View>
 
-                    {/* Driver & Car Detail Box */}
                     <View style={styles.driverCarBox}>
-                        {/* Driver Info */}
                         <View style={styles.driverSide}>
                             <View style={styles.avatarWrapper}>
-                                <Image source={{ uri: 'https://i.pravatar.cc/150?img=12' }} style={styles.driverAvatar} />
+                                <Image
+                                    source={{ uri: driverAvatar }}
+                                    style={styles.driverAvatar}
+                                />
                                 <View style={styles.ratingBadge}>
-                                    <Ionicons name="star" size={8} color="#FFFFFF" />
-                                    <Text style={styles.ratingText}>4.8</Text>
+                                    <Ionicons name="star" size={8} color="#fff" />
+                                    <Text style={styles.ratingText}>{driverRating}</Text>
                                 </View>
                             </View>
-                            <View style={styles.driverTextCol}>
-                                <Text style={styles.driverName}>Muhammad Ilyas</Text>
-                                <Text style={styles.driverStatus}>Top Rated</Text>
+
+                            <View>
+                                <Text style={styles.driverName}>{driverName}</Text>
+                                <Text style={styles.driverStatus}>Driver</Text>
                             </View>
                         </View>
 
-                        {/* Car Info */}
                         <View style={styles.carSide}>
                             <Image
-                                source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3202/3202003.png' }} // Placeholder for actual car image
+                                source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3202/3202003.png' }}
                                 style={styles.carImage}
-                                resizeMode="contain"
                             />
-                            <View style={styles.carTextCol}>
+                            <View>
                                 <Text style={styles.carModel}>Toyota Corolla</Text>
-                                <Text style={styles.carPlate}>XYZ 2020</Text>
+                                <Text style={styles.carPlate}>{driverPlate}</Text>
                             </View>
                         </View>
                     </View>
 
-                    {/* Location Timeline Box */}
                     <View style={styles.locationBox}>
                         <View style={styles.timelineGraphic}>
                             <View style={styles.timelineDot} />
                             <View style={styles.timelineLine} />
                             <View style={styles.timelineDot} />
                         </View>
+
                         <View style={styles.locationDetails}>
-                            <View style={styles.locationRow}>
-                                <Text style={styles.locationLabel}>Pickup</Text>
-                                <Text style={styles.locationAddress}>689 st, barham road</Text>
-                            </View>
-                            <View style={[styles.locationRow, { marginTop: 12 }]}>
-                                <Text style={styles.locationLabel}>Drop-off</Text>
-                                <Text style={styles.locationAddress}>689 st, barham road</Text>
-                            </View>
+                            <Text style={styles.locationLabel}>Pickup</Text>
+                            <Text style={styles.locationAddress}>Your Location</Text>
+
+                            <Text style={[styles.locationLabel, { marginTop: 10 }]}>Drop-off</Text>
+                            <Text style={styles.locationAddress}>Destination</Text>
                         </View>
                     </View>
 
-                    {/* Action Buttons */}
-                    <TouchableOpacity style={styles.primaryButton} activeOpacity={0.8}>
-                        <Ionicons name="shield-checkmark-outline" size={20} color="#FFFFFF" style={styles.btnIcon} />
+                    <TouchableOpacity style={styles.primaryButton}>
+                        <Ionicons name="shield-checkmark-outline" size={20} color="#fff" />
                         <Text style={styles.primaryButtonText}>Share Trip Status</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.cancelButton} activeOpacity={0.7}>
+                    <TouchableOpacity
+                        style={styles.cancelButton}
+                        onPress={() => {
+                            Alert.alert(
+                                "Cancel Ride",
+                                "Are you sure?",
+                                [
+                                    { text: "No", style: "cancel" },
+                                    {
+                                        text: "Yes",
+                                        style: "destructive",
+                                        onPress: () => router.replace("/")
+                                    }
+                                ]
+                            );
+                        }}
+                    >
                         <Text style={styles.cancelButtonText}>Cancel Ride</Text>
                     </TouchableOpacity>
 
                 </View>
             </View>
 
-            {/* --- Bottom Navigation --- */}
-            <View style={styles.bottomNavContainer}>
-                {/* Previous Rides Pull-up Handle */}
-                <View style={styles.previousRidesHandle}>
-                    <View style={styles.handleLeft}>
-                        <Ionicons name="cube-outline" size={18} color="#1C1C1E" style={styles.handleIcon} />
-                        <Text style={styles.handleTitle}>Previous Rides</Text>
-                    </View>
-                    <View style={styles.handleBadge}>
-                        <Ionicons name="chevron-up" size={14} color="#1C1C1E" />
-                        <Text style={styles.handleBadgeText}>4</Text>
-                    </View>
-                </View>
-
-                {/* Tabs */}
-                <View style={styles.tabBar}>
-                    <TouchableOpacity style={styles.tabItem}>
-                        <Ionicons name="car-outline" size={24} color="#8E8E93" />
-                        <Text style={styles.tabText}>Rides</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.tabItem}>
-                        <Ionicons name="location-outline" size={24} color="#A855F7" />
-                        <Text style={[styles.tabText, styles.activeTabText]}>On Map</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.tabItem}>
-                        <View>
-                            <Ionicons name="notifications-outline" size={24} color="#8E8E93" />
-                            <View style={styles.notificationDot} />
-                        </View>
-                        <Text style={styles.tabText}>Inbox</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
         </View>
     );
 }
@@ -197,6 +184,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FDFBFF',
+        justifyContent: "center"
     },
     map: {
         ...StyleSheet.absoluteFillObject,
@@ -277,10 +265,11 @@ const styles = StyleSheet.create({
     // Main Card
     mainCardContainer: {
         position: 'absolute',
-        bottom: 130, // Above the bottom nav
-        left: 20,
-        right: 20,
-        zIndex: 10,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        paddingHorizontal: 20,
+        paddingBottom: 20,
     },
     mainCard: {
         backgroundColor: '#FFFFFF',
