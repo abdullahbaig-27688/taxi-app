@@ -3,44 +3,68 @@ import React, { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const IRAQ_TAXIS = [
-  { id: 'all', label: 'All Taxis', icon: 'grid-outline', imageUrl: null },
-  { id: 'economy', label: 'Economy', icon: 'car-outline', imageUrl: 'https://i.imgur.com/7N1K2mG.png' }, // Saipa / Elantra
-  { id: 'premium', label: 'Premium', icon: 'car-sport-outline', imageUrl: 'https://i.imgur.com/uX88XvB.png' }, // Camry / Avalon
-  { id: 'suv_family', label: 'Family', icon: 'car-outline', imageUrl: 'https://i.imgur.com/YV06oXb.png' }, // Tucson / Sportage
-  { id: 'vip', label: 'VIP Business', icon: 'shield-checkmark-outline', imageUrl: 'https://i.imgur.com/T0bA76V.png' }, // Tahoe / Land Cruiser
+  {
+    id: 'all',
+    label: 'All Taxis',
+    icon: 'grid-outline',
+    image: null
+  },
+  {
+    id: 'economy',
+    label: 'Economy',
+    icon: 'car-outline',
+    image: require('../../assets/images/economi.png')
+  },
+  {
+    id: 'premium',
+    label: 'Premium',
+    icon: 'car-sport-outline',
+    image: require('../../assets/images/premium.png')
+  },
+  {
+    id: 'bike',
+    label: 'Bike',
+    icon: 'car-outline',
+    image: require('../../assets/images/bike.png')
+  },
+  {
+    id: 'auto',
+    label: 'Auto',
+    icon: 'shield-checkmark-outline',
+    image: require('../../assets/images/auto.png')
+  },
 ];
 
 export default function VehicleCategories() {
   const [selectedId, setSelectedId] = useState('all');
 
   return (
-    <ScrollView 
-      horizontal 
+    <ScrollView
+      horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.scrollContainer}
     >
       {IRAQ_TAXIS.map((category) => {
         const isSelected = selectedId === category.id;
-        
         return (
-          <TouchableOpacity 
-            key={category.id} 
+          <TouchableOpacity
+            key={category.id}
             style={styles.itemContainer}
             onPress={() => setSelectedId(category.id)}
             activeOpacity={0.7}
           >
             <View style={[styles.box, isSelected ? styles.boxSelected : styles.boxUnselected]}>
-              {category.imageUrl ? (
-                <Image 
-                  source={{ uri: category.imageUrl }} 
-                  style={styles.vehicleImage} 
-                  resizeMode="contain" 
+              {category.image ? (
+                <Image
+                  source={category.image}
+                  style={styles.vehicleImage}
+                  resizeMode="contain"
                 />
               ) : (
-                <Ionicons 
-                  name={category.icon as any} 
-                  size={26} 
-                  color={isSelected ? '#6236FF' : '#1C1C1E'} 
+                <Ionicons
+                  name={category.icon as any}
+                  size={26}
+                  color={isSelected ? '#6236FF' : '#1C1C1E'}
                 />
               )}
             </View>
@@ -71,14 +95,14 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   boxSelected: {
-    backgroundColor: '#EBE6FF', 
+    backgroundColor: '#EBE6FF',
   },
   boxUnselected: {
-    backgroundColor: '#F6F6F9', 
+    backgroundColor: '#F6F6F9',
   },
   vehicleImage: {
-    width: '85%',
-    height: '85%',
+    width: '100%',
+    height: '100%',
   },
   label: {
     fontSize: 12,

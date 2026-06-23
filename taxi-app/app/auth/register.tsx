@@ -19,6 +19,7 @@ export default function RegisterScreen() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [repassword, setRePassword] = useState('');
     const [secureText, setSecureText] = useState(true);
 
     return (
@@ -64,6 +65,21 @@ export default function RegisterScreen() {
                                 style={styles.inputField}
                                 value={password}
                                 onChangeText={setPassword}
+                                secureTextEntry={secureText}
+                                autoCapitalize="none"
+                            />
+                            <TouchableOpacity onPress={() => setSecureText(!secureText)}>
+                                <Ionicons name={secureText ? "eye-outline" : "eye-off-outline"} size={20} color="#8E8E93" />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.inputWrapper}>
+                            <Ionicons name="lock-closed-outline" size={20} color="#8E8E93" style={styles.inputIcon} />
+                            <TextInput
+                                placeholder="ReWrite Password"
+                                placeholderTextColor="#AEAEB2"
+                                style={styles.inputField}
+                                value={repassword}
+                                onChangeText={setRePassword}
                                 secureTextEntry={secureText}
                                 autoCapitalize="none"
                             />

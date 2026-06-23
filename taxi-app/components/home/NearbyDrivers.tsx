@@ -3,10 +3,10 @@ import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 const IRAQ_DRIVERS = [
-    { id: '1', name: 'Ahmed Khan', rating: '4.9', time: '2 min away', plate: 'بغداد - ٥٨٣٩٢', avatar: 'https://i.imgur.com/W7S0v0p.png', carImage: 'https://i.imgur.com/7N1K2mG.png' },
-    { id: '2', name: 'Mustafa Ali', rating: '5.0', time: '3 min away', plate: 'أربيل - ٢٠٤٨١', avatar: 'https://i.imgur.com/twHofw2.png', carImage: 'https://i.imgur.com/T0bA76V.png' },
-    { id: '3', name: 'Ali Hussein', rating: '4.7', time: '5 min away', plate: 'البصرة - ٩٩٢٣٤', avatar: 'https://i.imgur.com/K386E8v.png', carImage: 'https://i.imgur.com/uX88XvB.png' },
-    { id: '4', name: 'Omar Jamil', rating: '4.9', time: '6 min away', plate: 'بغداد - ١٠٧٥٤', avatar: 'https://i.imgur.com/v06F2L3.png', carImage: 'https://i.imgur.com/YV06oXb.png' },
+    { id: '1', name: 'Ahmed Khan', rating: '4.9', time: '2 min away', plate: 'بغداد - ٥٨٣٩٢', avatar: 'https://i.imgur.com/W7S0v0p.png', image: require('../../assets/images/nearme1.png') },
+    { id: '2', name: 'Mustafa Ali', rating: '5.0', time: '3 min away', plate: 'أربيل - ٢٠٤٨١', avatar: 'https://i.imgur.com/twHofw2.png', image: require('../../assets/images/nearme2.png') },
+    { id: '3', name: 'Ali Hussein', rating: '4.7', time: '5 min away', plate: 'البصرة - ٩٩٢٣٤', avatar: 'https://i.imgur.com/K386E8v.png', image: require('../../assets/images/nearme1.png') },
+    { id: '4', name: 'Omar Jamil', rating: '4.9', time: '6 min away', plate: 'بغداد - ١٠٧٥٤', avatar: 'https://i.imgur.com/v06F2L3.png', image: require('../../assets/images/nearme2.png') },
 ];
 
 export default function NearbyDrivers() {
@@ -27,10 +27,14 @@ export default function NearbyDrivers() {
 
                             {/* Main Content Layout Wrapper */}
                             <View style={styles.mainContentWrapper}>
-                                
+
                                 {/* 2. MIDDLE AREA: Car Image and Plate Number */}
                                 <View style={styles.middleContainer}>
-                                    <Image source={{ uri: driver.carImage }} style={styles.carImg} resizeMode="contain" />
+                                    <Image
+                                        source={driver.image}
+                                        style={styles.carImg}
+                                        resizeMode="contain"
+                                    />
                                     <View style={styles.plateBox}>
                                         <Text style={styles.plateText}>{driver.plate}</Text>
                                     </View>
@@ -104,18 +108,18 @@ const styles = StyleSheet.create({
     },
     mainContentWrapper: {
         flex: 1,
-        marginTop: 28, 
+        marginTop: 28,
         justifyContent: 'space-between',
     },
     middleContainer: {
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
-        marginVertical: 6,
+        marginVertical: 2,
     },
     carImg: {
         width: '100%',
-        height: 55,
+        height: 125,
     },
     plateBox: {
         backgroundColor: '#FFFFFF',
@@ -146,7 +150,7 @@ const styles = StyleSheet.create({
     ratingBadge: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#EBE6FF', 
+        backgroundColor: '#EBE6FF',
         paddingHorizontal: 8,
         paddingVertical: 4,
         borderRadius: 10,

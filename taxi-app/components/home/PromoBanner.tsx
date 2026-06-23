@@ -20,7 +20,7 @@ export default function PromoBanner() {
       </View>
 
       <Image 
-        source={{ uri: 'https://i.imgur.com/T0bA76V.png' }} 
+        source={require("../../assets/images/coverCar.png")} 
         style={styles.bannerCarImage}
         resizeMode="contain"
       />
@@ -77,10 +77,10 @@ const styles = StyleSheet.create({
   },
   bannerCarImage: {
     position: 'absolute',
-    right: -15,
+    right: 5,
     bottom: -5,
-    width: 175,
-    height: 120,
+    width: 185,
+    height: 125,
     zIndex: 2,
   },
 });
