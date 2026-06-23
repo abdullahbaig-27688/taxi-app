@@ -1,9 +1,9 @@
 import { Hono } from "hono";
-import { authMiddleware } from "../../middlewares/auth.middleware";
+import { requireAuth } from "../../middlewares/auth.middleware";
 import { AppEnv } from "../../types";
 import { userService } from "./user.service";
 export const userRoutes = new Hono<AppEnv>();
-userRoutes.use("*", authMiddleware)
+userRoutes.use("*", requireAuth)
 userRoutes.get("/me", async (c) => {
     const { sub } = c.get("user")
     const profile = await userService.getProfile(sub)
