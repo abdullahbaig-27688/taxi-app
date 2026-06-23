@@ -248,7 +248,7 @@ export default function LoginScreen() {
 
                     <View style={styles.footerRedirectRow}>
                         <Text style={styles.footerLabel}>Don't have an account? </Text>
-                        <TouchableOpacity onPress={() => router.push('/(tabs)')} disabled={loading} hitSlop={8}>
+                        <TouchableOpacity onPress={() => router.push("/auth/register")} disabled={loading} hitSlop={8}>
                             <Text style={styles.redirectText}>Register</Text>
                         </TouchableOpacity>
                     </View>
